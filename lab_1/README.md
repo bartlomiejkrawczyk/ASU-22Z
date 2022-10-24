@@ -1,6 +1,6 @@
 # Setup
 
-```shell
+```s
 /dyd/asu/net.pl
 ```
 
@@ -27,7 +27,7 @@ Przy pomocy poleceń *ping* i *tracroute* należy sprawdzić czy maszny **host1*
 
 ### - Polecenie **ifconfig**
 
-```shell
+```s
 ifconfig interface [address_family] [address] [up] [down] [netmask mask] [broadcast address]
 ```
 - address family - rodzina adresów
@@ -38,7 +38,7 @@ ifconfig interface [address_family] [address] [up] [down] [netmask mask] [broadc
 
 ### - Polecenie **ip route**
 
-```shell 
+```s 
 ip route add ADDR/BITS via GW 	# dodanie trasy do interfejsu
 ip route add default   via GW 	# dodanie trasy domyślnej przez router
 ```
@@ -46,25 +46,25 @@ ip route add default   via GW 	# dodanie trasy domyślnej przez router
 ## Rozwiązanie
 
 ### Host1
-```shell
+```s
 ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up
 dhclient eth1
 ip route add 192.168.2.0/24 via 192.168.1.1
 ```
 ### Host2
-```shell
+```s
 ifconfig eth0 192.168.2.20 netmask 255.255.255.0 up
 dhclient eth1
 ip route add 192.168.1.0/24 via 192.168.2.1
 ```
 ### Router
-```shell
+```s
 ifconfig eth0 192.168.1.1 netmask 255.255.255.0 up
 ifconfig eth1 192.168.2.1 netmask 255.255.255.0 up
 dhclient eth2
 ```
 W przypadku gdyby nie działały testy:
-```shell
+```s
 sysctl net.ipv4.ip_forward=1
 ```
 
@@ -76,7 +76,7 @@ Należy zapisać konfigurację w plikach `/etc/hosts`, `/etc/network/interfaces`
 
 ### - Plik **/etc/hosts**
 
-```shell
+```s
 IP-address official-host-name nicknames...
 ```
 
@@ -85,7 +85,7 @@ IP-address official-host-name nicknames...
 - nicknames - alternatywne nazwy maszyny
 
 #### Przykład:
-```shell
+```s
 127.0.0.1 localhost
 148.81.31.9 abc.ghi.pw.edu.pl abc
 
@@ -104,7 +104,7 @@ ff02::2 ip6-allrouters
 
 #### Przykład:
 
-```shell
+```s
 # The loopback network interface
 auto lo
 iface lo inet loopback
@@ -129,12 +129,12 @@ iface eth1 inet dhcp
 ### Host1
 
 - **/etc/hosts**
-```shell
+```s
 192.168.2.20	host2
-192.168.1.1		router
+192.168.1.1	router
 ```
 - **/etc/network/interfaces**
-```shell
+```s
 # The loopback network interface
 auto lo
 iface lo inet loopback
@@ -152,12 +152,12 @@ iface eth1 inet dhcp
 ### Host2
 
 - **/etc/hosts**
-```shell
+```s
 192.168.1.10	host1
-192.168.2.1		router
+192.168.2.1	router
 ```
 - **/etc/network/interfaces**
-```shell
+```s
 # The loopback network interface
 auto lo
 iface lo inet loopback
@@ -175,12 +175,12 @@ iface eth1 inet dhcp
 ### Router
 
 - **/etc/hosts**
-```shell
+```s
 192.168.1.10	host1
 192.168.2.20	host2
 ```
 - **/etc/network/interfaces**
-```shell
+```s
 # The loopback network interface
 auto lo
 iface lo inet loopback
@@ -201,7 +201,7 @@ iface eth2 inet dhcp
 
 W przypadku gdyby nie działały testy:
 - **/etc/sysctl.conf**
-```shell
+```s
 net.ipv4.ip_forward=1
 ```
 
@@ -210,36 +210,36 @@ net.ipv4.ip_forward=1
 Na maszynie **host1** należy zainstalować skonfigurować server **FTP** (pakiet `vsftpd`) a na maszynie **host2** klienta (pakiet `ftp`). Konfiguracja powinna umożliwiać zalogowanemu użytkownikowi *user* zapis danych w swoim katalogu domowym.
 
 ### Host1
-```shell
+```s
 apt-get update
 apt-get install vsftpd
 ```
 
 - **/etc/vsftpd.conf**
-```shell
+```s
 local_enable=YES
 write_enable=YES
 ```
 
 Restart serwisu:
-```shell
+```s
 service vsftpd restart
 ```
 	
 ### Host2
-```shell
+```s
 apt-get update
 apt-get install ftp
 echo DUPA DUPA DUPA > test.txt
 ```
 
 Odpalić shell `ftp`:
-```shell
+```s
 ftp host1
 ```
 
 i dalej w shellu:
-```shell
+```s
 put test.txt
 bye
 ```
