@@ -16,8 +16,8 @@ Po zalogowaniu sie na konto root należy skonfigurować interfejsy zgodnie z tab
 | maszyna | eth0         | eth1        | eth2 |
 |---------|--------------|-------------|------|
 | host1   | 192.168.1.10 | dhcp        |      |
-| host1   | 192.168.2.20 | dhcp        |      |
-| host1   | 192.168.1.1  | 192.168.2.1 | dhcp |
+| host2   | 192.168.2.20 | dhcp        |      |
+| router  | 192.168.1.1  | 192.168.2.1 | dhcp |
 
 Należy też dodać wpisy do tablic routingu tak aby łączność pomiędzy maszynami **host1** i **host2** odbywała się poprzez maszynę **router**.
 
