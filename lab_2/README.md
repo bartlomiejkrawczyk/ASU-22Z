@@ -193,6 +193,8 @@ mkdir pub
 
 ```s
 exportfs -a
+# lub
+service nfs-kernel-server start
 ```
 
 ### Host2
