@@ -17,6 +17,11 @@ VirtualBox
 | host1   | 192.168.4.10 |
 | host2   | 192.168.4.20 |
 
+Sprawdzić najpierw adres:
+```s
+ip a
+```
+
 # Etap I
 
 Po zalogowaniu sie na maszynę **host1** należy skonfigurować serwer główny domeny `asu.ia.pw.edu.pl` oraz domeny odwrotnej `4.168.192.in-addr.arpa`.
@@ -34,7 +39,7 @@ sudo apt-get install bind9
 sudo apt-get install dnsutils
 ```
 
-**/etc/bind/named.conf.asu**
+**/etc/bind/named.conf.local**
 ```s
 zone "asu.ia.pw.edu.pl" {
     type master;
@@ -97,6 +102,7 @@ nameserver 127.0.0.1
 ```
 
 ```s
+sudo resolvconf -u
 host -t SOA asu.ia.pw.edu.pl
 host -t NS asu.ia.pw.edu.pl
 host host1.asu.ia.pw.edu.pl
