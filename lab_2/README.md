@@ -164,7 +164,7 @@ nameserver 127.0.0.1
 ```
 
 ```s
-host www.asu.ia.pw.edu.pl
+host asu.ia.pw.edu.pl
 host host1.asu.ia.pw.edu.pl
 host host2.asu.ia.pw.edu.pl
 nslookup 192.168.4.10
