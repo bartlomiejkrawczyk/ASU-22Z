@@ -90,7 +90,7 @@ $TTL    86400
 ```
 
 ```s
-named-checkconf named.conf.asu
+named-checkconf named.conf.local
 named-checkzone "asu.ia.pw.edu.pl" master.asu.dns
 named-checkzone "4.168.192.in-addr.arpa" master.asu.dns.inv
 systemctl start bind9
@@ -135,7 +135,7 @@ W tym etapie na maszynie **host2** konfigurujemy serwer pomocniczy (ang. slave) 
 
 ### Host2
 
-**/etc/bind/named.conf.asu**
+**/etc/bind/named.conf.local**
 ```s
 zone "asu.ia.pw.edu.pl" {
     type slave;
@@ -151,7 +151,7 @@ zone "4.168.192.in-addr.arpa" {
 ```
 
 ```s
-named-checkconf named.conf.asu
+named-checkconf named.conf.local
 systemctl restart bind9
 cat /etc/bind/slave.asu.dns
 cat /etc/bind/slave.asu.dns.inv
