@@ -94,6 +94,7 @@ named-checkconf named.conf.local
 named-checkzone "asu.ia.pw.edu.pl" master.asu.dns
 named-checkzone "4.168.192.in-addr.arpa" master.asu.dns.inv
 systemctl start bind9
+sudo resolvconf -u
 ```
 
 **/etc/resolv.conf**
@@ -102,7 +103,6 @@ nameserver 127.0.0.1
 ```
 
 ```s
-sudo resolvconf -u
 host -t SOA asu.ia.pw.edu.pl
 host -t NS asu.ia.pw.edu.pl
 host host1.asu.ia.pw.edu.pl
