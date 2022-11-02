@@ -140,13 +140,13 @@ W tym etapie na maszynie **host2** konfigurujemy serwer pomocniczy (ang. slave) 
 zone "asu.ia.pw.edu.pl" {
     type slave;
     file "/etc/bind/slave.asu.dns";
-    masters { 192.168.4.10 };
+    masters { 192.168.4.10; };
 };
 
 zone "4.168.192.in-addr.arpa" {
     type slave;
     file "/etc/bind/slave.asu.dns.inv";
-    masters { 192.168.4.10 };
+    masters { 192.168.4.10; };
 };
 ```
 
