@@ -93,7 +93,7 @@ $TTL    86400
 named-checkconf named.conf.local
 named-checkzone "asu.ia.pw.edu.pl" master.asu.dns
 named-checkzone "4.168.192.in-addr.arpa" master.asu.dns.inv
-systemctl start bind9
+service bind9 start
 sudo resolvconf -u
 ```
 
@@ -152,7 +152,7 @@ zone "4.168.192.in-addr.arpa" {
 
 ```s
 named-checkconf named.conf.local
-systemctl restart bind9
+service bind9 restart
 cat /etc/bind/slave.asu.dns
 cat /etc/bind/slave.asu.dns.inv
 ```
@@ -169,6 +169,10 @@ host host1.asu.ia.pw.edu.pl
 host host2.asu.ia.pw.edu.pl
 nslookup 192.168.4.10
 nslookup 192.168.4.20
+nslookup host1.asu.ia.pw.edu.pl host1.asu.ia.pw.edu.pl
+nslookup host1.asu.ia.pw.edu.pl host2.asu.ia.pw.edu.pl
+nslookup host2.asu.ia.pw.edu.pl host1.asu.ia.pw.edu.pl
+nslookup host2.asu.ia.pw.edu.pl host2.asu.ia.pw.edu.pl
 ```
 
 # Etap III
