@@ -428,3 +428,80 @@ userdel [-r] loginnname
 ```
 Opcje:
 - -r – katalog użytkownika należy skasować wraz z całą zawartością
+
+# Usługa LDAP
+
+
+Generalnie BSS i /etc/nsswitch.conf
+
+# Procesy
+
+## fork()
+```s
+$pid=fork();
+if ($pid == 0)
+{ ........ child ......... }
+elsif ($pid > 0)
+{ ........ parent ......... }
+else
+{ ........ error ......... }
+```
+
+Procedura `fork()` tworzy kopię procesu głównego.
+
+Kopiowane są dane procesu (proces rodzic i dziecko korzystają z programu zapisanego w tym samym miejscu w pamięci).
+
+## exec()
+
+Procedura `exec()` zastępuje pamięć programu oraz pamięć danych danymi z wywoływanego procesu.
+
+## Sygnały
+
+```s
+SIGHUP  1  – hangup
+SIGINT  2  – interrupt (rubout)
+SIGQUIT 3  – quit (ASCII FS)
+SIGILL  4  – illegal instruction (not reset when caught)
+SIGTRAP 5  – trace trap (not reset when caught)
+SIGIOT  6  – IOT instruction
+SIGABRT 6  – used by abort, replace SIGIOT in the future
+SIGEMT  7  – EMT instruction
+SIGFPE  8  – floating point exception
+SIGKILL 9  – kill (cannot be caught or ignored)
+SIGBUS  10 – bus error
+SIGSEGV 11 – segmentation violation
+SIGSYS  12 – bad argument to system call
+SIGPIPE 13 – write on a pipe with no one to read it
+SIGALRM 14 – alarm clock
+SIGTERM 15 – software termination signal from kill
+SIGUSR1 16 – user defined signal 1
+```
+
+## Komenda – crontab
+```s
+crontab [ filename ]
+crontab -e [username]
+crontab -r [username]
+crontab -l [username]
+```
+
+```s
+minuta godzina dzień miesiąc dzień tygodnia komenda
+```
+- minuta – 0..59
+- godzina – 0..23
+- dzień (miesiąca) – 1..31
+- miesiąc – 1..12
+- dzień tygodnia – 0..6 (0=Niedziela, 1=Poniedziałek, ...)
+
+Przykłady:
+```s
+#minuta     godzina     dzień   miesiąc     dzień tygodnia  komenda
+@reboot                                                     echo "Jak dobrze wstac ..."
+0           12          1       *           *               echo "Pierwszy - idz po wyplate"
+0           12          *       *           5               echo "Jutro Sobota!"
+0           *           *       *           *               kuku
+*/15        *           *       *           *               bam
+0           12          *       7-8         *               echo "Wakacje!"
+0           12          *       1,4,7,10    *               echo "Poczatek kwartalu"
+```
