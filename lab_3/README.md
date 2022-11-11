@@ -12,15 +12,11 @@ VirtualBox
 
 # Przy założeniu adresów
 
-| maszyna | ip           | rodzaj         |
-|---------|--------------|----------------|
-| host1   | 192.168.4.10 | serwer wydruku |
-| host2   | 192.168.4.20 | klient         |
+| maszyna | rodzaj         |
+|---------|----------------|
+| host1   | serwer wydruku |
+| host2   | klient         |
 
-Sprawdzić najpierw adres:
-```s
-ip a
-```
 
 # Etap I
 
@@ -42,7 +38,6 @@ echo DUPA DUPA DUPA > cups/test.txt
 ```s
 cd /
 mkdir CUPS
-sudo apt-get install virtualbox-guest-dkms virtualbox-guest-utils
 mount -t vboxsf cups /CUPS
 cd CUPS/
 ls
@@ -62,7 +57,10 @@ exit 0
 ```s
 reboot
 cd /CUPS/
-su anonymous -c "touch dupa.txt"
+su anonymous
+touch dupa.txt
+# Jeśli wyskoczy `Permission denied` to i tak sprawdzić czy plik powstał.
+ls
 ```
 
 # Etap II
@@ -73,15 +71,13 @@ Na maszynie **host1** należy skonfigurować serwer wydruku korzystając z pakie
 
 ### Host1
 
-```s
-sudo apt-get install elinks
-sudo apt-get install cups-pdf
-```
+
 
 **/etc/cups/cups-pdf.conf**
 ```s
-Out ...  -> Out /CUPS
-#AnonDirName ...  ->  AnonDirName /CUPS
+# Podmienić następujące linie w pliku:
+Out ${HOME}/PDF   -> Out /CUPS
+#AnonDirName ...  -> AnonDirName /CUPS
 ```
 
 ```s
@@ -91,20 +87,6 @@ elinks http://localhost:631
 
 ```s
 Printers -> PDF -> Maintenance__ -> Print Test Page -> Go
-```
-Jeśli problemy to:
-```s
-mv /etc/apparmor.d/usr.sbin.cupsd /etc/apparmor.d/disable
-/etc/init.d/apparmor restart
-```
-
-```s
-Administration__ -> Modify Printer -> Go -> (root/root) -> Continue -> [X] Share This Printer -> Continue -> Modify Printer
-Administration -> [X] Share printers connected to this system -> save & wait till resets 
-```
-
-```s
-service cups restart
 ```
 
 ### Maszyna Gospodarz
@@ -121,10 +103,15 @@ Na maszynie **host1** przy pomocy programu `elinks` zmieniamy konfigurację druk
 
 ### Host1
 
+```s
+Administration__ -> Modify Printer -> Go -> (root/root) -> Continue -> [X] Share This Printer -> Continue -> Modify Printer
+Administration -> [X] Share printers connected to this system -> save & wait till resets 
+```
+
 **/etc/cups/cupsd.conf**
 ```s
+# Znaleźć odpowiednie wpisy oraz dopisać wartości
 Listen localhost:631  ->  Port 631
-# ...
 <Location />
     Order allow, deny
     Allow all
@@ -143,4 +130,3 @@ lpoptions -d PDF
 echo DUPA DUPA DUPA > test.txt
 lp test.txt
 ```
-
