@@ -47,6 +47,15 @@ ou: People
 objectClass: organizationalUnit
 structuralObjectClass: organizationalUnit
 
+dn: ou=Groups,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
+objectClass: organizationalUnit
+ou: Groups
+
+dn: cn=students,ou=Groups,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
+objectClass: posixAccount
+cn: students
+gidNumber: 5000
+
 dn: uid=jan,ou=People,dc=ia,dc=pw,dc=edu,dc=pl
 uid: jan
 cn: Jan Kowalski
@@ -64,7 +73,6 @@ gecos: Jan Kowalski,,,
 sn: Kowalski
 givenName: Jan
 displayName: Jan Kowalski
-structuralObjectClass: account
 ```
 
 ```s
