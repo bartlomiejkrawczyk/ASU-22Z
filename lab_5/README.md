@@ -40,7 +40,7 @@ The user interface will be displayed. On each screen, select the following value
 - No
 - 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 192.168.0.0/24
 - 0
-- +
+- `+`
 - all
 
 **/etc/postfix/main.cf**:
