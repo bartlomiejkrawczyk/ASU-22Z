@@ -42,7 +42,7 @@ Katalog domowy użytkownika został utworzony na maszynie **host1** z `uid=5000`
 
 **~/jan.ldif**
 ```s
-dn: ou=People,dc=ia,dc=pw,dc=edu,dc=pl
+dn: ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
 ou: People
 objectClass: organizationalUnit
 structuralObjectClass: organizationalUnit
@@ -56,7 +56,7 @@ objectClass: posixAccount
 cn: students
 gidNumber: 5000
 
-dn: uid=jan,ou=People,dc=ia,dc=pw,dc=edu,dc=pl
+dn: uid=jan,ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
 uid: jan
 cn: Jan Kowalski
 # objectClass: inetOrgPerson ?
@@ -77,6 +77,8 @@ displayName: Jan Kowalski
 
 ```s
 ldapadd -x -D cn=admin,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl -W -f ~/jan.ldif
+sudo auth-client-config -t nss -p lac_ldap
+sudo pam-auth-update
 ```
 
 # Etap II
