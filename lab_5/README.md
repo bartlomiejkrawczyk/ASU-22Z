@@ -14,14 +14,6 @@ Maszyny wirtualne:
 
 Na nam maszynie host1 utworzona jest już domena DNS `asu.ia.pw.edu.pl`.
 
-# Przy założeniu adresów
-
-| maszyna | rodzaj                   |
-|---------|--------------------------|
-| host1   | serwer OpenLDAP / klient |
-| host2   | klient                   |
-
-
 # Etap I
 
 Należy skonfigurować program `postfix` do obsługi adresów w postaci:
