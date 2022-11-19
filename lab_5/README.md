@@ -18,7 +18,7 @@ Na nam maszynie host1 utworzona jest już domena DNS `asu.ia.pw.edu.pl`.
 
 Należy skonfigurować program `postfix` do obsługi adresów w postaci:
 - `użytkownik@asu.ia.pw.edu.pl`
--` użytkownik@host1.asu.ia.pw.edu.pl`
+- `użytkownik@host1.asu.ia.pw.edu.pl`
 
 Oraz program `Dovecot Server` do obsługi protokołu `IMAP`.
 
