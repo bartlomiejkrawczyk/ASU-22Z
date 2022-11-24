@@ -35,10 +35,10 @@ sudo dpkg-reconfigure postfix
 The user interface will be displayed. On each screen, select the following values:
 - Internet Site
 - asu.ia.pw.edu.pl
-- jan
-- asu.ia.pw.edu.pl, localhost.localdomain, localhost
+- root, jan, ewa
+- asu.ia.pw.edu.pl, localhost.asu.ia.pw.edu.pl, localhost
 - No
-- 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 192.168.0.0/24
+- 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 192.168.4.0/24
 - 0
 - `+`
 - all
@@ -72,6 +72,8 @@ mail_location = maildir:~/mail
 service dovecot restart
 ```
 
+*Najelpiej oddać wszystkie etapy na raz - maile wysyłamy z poziomu skonfigurowanego **Alpine**
+
 # Etap II
 
 Zdefiniować aliasy pocztowe:
@@ -103,7 +105,7 @@ Foldery z pocztą odebraną i wysłaną powinny prezentować spójną zawartoś�
 
 ## Rozwiązanie
 
-Konfigurujemy program `alpine` na obu hostach logując się zarówno dla **jan** i **ewa**, czyli łącznie 4 razy
+Konfigurujemy program `alpine` na obu hostach logując się zarówno dla **jan** i **ewa**, czyli łącznie 4 razy (u Sobczyka można po jednej osobie na maszynę)
 1. Uruchamiamy `alpine`, wchodzimy do `S Setup -> C Config` i ustawiamy według przykładu:
 
 ```s
@@ -111,7 +113,7 @@ Personal Name               = ewa
 SMTP Domain                 = asu.ia.pw.edu.pl
 SMTP Server (for sending)   = host1.asu.ia.pw.edu.pl
 SMTP Server (for news)      = <No Value Set>
-Inbox Path                  = [host1.asu.ia.pw.edu.pl:143/user=ewa] inbox
+Inbox Path                  = {host1.asu.ia.pw.edu.pl:143/user=ewa} inbox
 ...
 
 [Composer preferences]
@@ -119,12 +121,12 @@ Inbox Path                  = [host1.asu.ia.pw.edu.pl:143/user=ewa] inbox
 [ ] ...
 ```
 
-2. `S Setup -> L connectionList` ustawiamy według przykładu (możliwe że pole mail/ powinno być puste lub bez /)
+2. `S Setup -> L connectionList` ustawiamy według przykładu:
 
 ```s
 Nickname:   Mail
 Server:     host1.asu.ia.pw.edu.pl:143/user=ewa
-Path:       mail/
+Path:       mail
 View:
 ```
 
