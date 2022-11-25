@@ -91,9 +91,9 @@ iptables -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 | client    | ssh user@192.168.1.20             | nie działa |                                        |
 | client    | dig @firewall mion.elka.pw.edu.pl | nie działa |                                        |
 | host1     | elinks www.elka.pw.edu.pl         | działa     |                                        |
-| host1     | ssh bkrawcz1@mion.elka.pw.edu.pl  | działa     |                                        |
+| host1     | ssh login@mion.elka.pw.edu.pl     | działa     |                                        |
 | host2     | elinks www.elka.pw.edu.pl         | działa     |                                        |
-| host2     | ssh bkrawcz1@mion.elka.pw.edu.pl  | działa     |                                        |
+| host2     | ssh login@mion.elka.pw.edu.pl     | działa     |                                        |
 
 
 # Komendy
