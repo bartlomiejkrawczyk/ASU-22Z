@@ -48,36 +48,40 @@ Zapisz podstawową konfigurację:
 iptables-save > ~/iptables-default
 ```
 
-1. Zablokowanie bezpośredniego dostępu do sieci `192.168.1.0/24` z innych sieci.
+1. Zablokowanie bezpośredniego dostępu do sieci `192.168.1.0/24` z innych sieci. && 4. Połączenie sieci `192.168.1.0/24` ze światem.
 
 ```s
-iptables -A INPUT -d 192.168.1.0/24 -s ! 192.168.1.0/24 -j DROP
+iptables -A FORWARD -i eth2 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i eth0 -o eth2 -j ACCEPT
+iptables -t nat -A POSTROUTING -j MASQUERADE
 ```
 
 2. Przekierowanie portów 80 z host1 i 22 z host2 tak, by były dostępne z innych sieci (a w szczególności z `192.168.2.0/24`).
 
 Przekierowanie portu 80 z host1:
 ```s
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.1.10:80
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.10 --dport 80 -j SNAT --to-source 192.168.1.1
+iptables -t nat -A PREROUTING -p tcp -i eth1 --dport 80 -j DNAT --to-destination 192.168.1.10:80
+iptables -t nat -A PREROUTING -p tcp -i eth2 --dport 80 -j DNAT --to-destination 192.168.1.10:80
 ```
 
 Przekierowanie portu 22 z host2:
 ```s
-iptables -t nat -A PREROUTING -p tcp --dport 22 -j DNAT --to-destination 192.168.1.20:22
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.20 --dport 22 -j SNAT --to-source 192.168.1.1
+iptables -t nat -A PREROUTING -p tcp -i eth1 --dport 22 -j DNAT --to-destination 192.168.1.20:22
+iptables -t nat -A PREROUTING -p tcp -i eth2 --dport 22 -j DNAT --to-destination 192.168.1.20:22
 ```
 
 3. Ograniczenie usługi DNS na maszynie firewall tylko do sieci `192.168.1.0/24`.
 
+Akceptacja dla sieci wewnętrznej:
 ```s
-iptables -A INPUT -s ! 192.168.1.0/24 -d 192.168.1.1 --dport 53 -j DROP
+iptables -A INPUT -p udp --dport 53 -s 192.168.1.0/24 -j ACCEPT
+iptables -A INPUT -p tcp --dport 53 -s 192.168.1.0/24 -j ACCEPT
 ```
 
-4. Połączenie sieci `192.168.1.0/24` ze światem.
-
+Odrzucanie wszystkich pozostałych połączeń na port 53:
 ```s
-iptables -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
+iptables -A INPUT -p udp --dport 53 -j DROP
+iptables -A INPUT -p tcp --dport 53 -j DROP
 ```
 
 
