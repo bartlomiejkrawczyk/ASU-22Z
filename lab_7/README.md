@@ -34,6 +34,10 @@ cp /var/www/index.shtml /var/www/asu1.ia.pw.edu.pl/public_html/
 cp /var/www/index.shtml /var/www/asu2.ia.pw.edu.pl/public_html/
 cp /var/www/index.shtml /var/www/asu3.ia.pw.edu.pl/public_html/
 
+# ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled
+# ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/mods-enabled
+a2enmod authnz_ldap
+
 cd /etc/apache2/sites-available
 cp ./000-default.conf ./asu1.asu.ia.pw.edu.pl.conf
 cp ./000-default.conf ./asu2.asu.ia.pw.edu.pl.conf
@@ -66,6 +70,57 @@ DocumentRoot /var/www/asuN.asu.ia.pw.edu.pl/public_html
 ...
 ```
 
+**/etc/apache2/sites-available/asu1.asu.ia.pw.edu.pl**
+```s
+<VirtualHost *:80>
+    ...
+    ServerName asu1.asu.ia.pw.edu.pl
+    ...
+</VirtualHost>
+```
+
+```s
+htpasswd -b -c /var/www/htpasswd ada ada
+htpasswd -b /var/www/htpasswd igor igor
+cat /var/www/htpasswd
+```
+
+**/etc/apache2/sites-available/asu2.asu.ia.pw.edu.pl**
+```s
+<VirtualHost *:80>
+    ...
+    ServerName asu2.asu.ia.pw.edu.pl
+    ...
+    <Directory /var/www>
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /var/www/htpasswd
+        Require valid-user
+    </Directory>
+</VirtualHost>
+```
+
+**/etc/apache2/sites-available/asu3.asu.ia.pw.edu.pl**
+```s
+<VirtualHost *:80>
+    ...
+    ServerName asu3.asu.ia.pw.edu.pl
+    ...
+    <Directory /var/www>
+        Order deny,allow
+        Deny from All
+        AuthName "LDAP"
+        AuthType Basic
+        AuthBasicProvider ldap
+        AuthzLDAPAuthoritative off # Tutaj jest jeszcze jakiś problem
+        AuthLDAPUrl ldap://asu.ia.pw.edu.pl/ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl?uid
+        Require valid-user
+        Satisfy any
+    </Directory>
+</VirtualHost>
+```
+
+
 ```s
 a2dissite ./000-default.conf
 a2ensite ./asu1.asu.ia.pw.edu.pl.conf
@@ -74,67 +129,10 @@ a2ensite ./asu3.asu.ia.pw.edu.pl.conf
 service apache2 restart
 ```
 
-Jak nie działa to dodać :P
 ```s
-sudo ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled
-```
-
-### Asu 1
-
-```s
-mkdir -p /var/www/asu1.asu.ia.pw.edu.pl/public_html
-cp /var/www/index.shtml /var/www/asu1.ia.pw.edu.pl/public_html/
-
-cd /etc/apache2/sites-available
-sudo ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled
-cp 000-default.conf ./asu1.asu.ia.pw.edu.pl.conf
-```
-
-**nano /etc/apache2/sites-available/asu1.asu.ia.pw.edu.pl.conf**
-```s
-...
-# DocumentRoot /var/www/html
-DocumentRoot /var/www/asu1.asu.ia.pw.edu.pl/public_html
-...
-```
-
-**nano /etc/apache2/apache2.conf**
-```s
-<Directory /var/www/>
-	Options +Indexes +FollowSymLinks +MultiViews +Includes
-	AllowOverride None
-    Require all granted
-    DirectoryIndex index.shtml
-	AddType text/html .shtml
-	AddOutputFilter INCLUDES .shtml
-</Directory>
-```
-
-
-**nano /etc/apache2/sites-available/default**
-```s
-<directory /var/www/>
-...
-Options +Includes 
-# AddType text/html .html
-# AddOutputFilter INCLUDES .html
-AddType text/html .shtml
-AddHandler server-parsed .shtml
-AddOutputFilter INCLUDES .shtml
-```
-
-### Asu 2
-
-```s
-htpasswd -b -c /var/www/htpasswd ada ada
-htpasswd -b /var/www/htpasswd igor igor
-cat /var/www/htpasswd
-```
-
-### Asu 3
-
-```s
-
+elinks asu1.asu.ia.pw.edu.pl
+elinks asu2.asu.ia.pw.edu.pl
+elinks asu3.asu.ia.pw.edu.pl
 ```
 
 # Etap II
