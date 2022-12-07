@@ -24,8 +24,7 @@ Na maszynie apache należy skonfigurować server www apache2. Należy utworzyć 
 - https://ubiq.co/tech-blog/how-to-enable-server-side-includes-ssi-in-apache/
 - http://ubuntu.flowconsult.at/en/apache2-ssi-installation/
 
-### Podstawowa konfiguracja stron
-```s
+<!-- 
 mkdir -p /var/www/asu1.asu.ia.pw.edu.pl/public_html
 mkdir -p /var/www/asu2.asu.ia.pw.edu.pl/public_html
 mkdir -p /var/www/asu3.asu.ia.pw.edu.pl/public_html
@@ -33,7 +32,10 @@ mkdir -p /var/www/asu3.asu.ia.pw.edu.pl/public_html
 cp /var/www/index.shtml /var/www/asu1.ia.pw.edu.pl/public_html/
 cp /var/www/index.shtml /var/www/asu2.ia.pw.edu.pl/public_html/
 cp /var/www/index.shtml /var/www/asu3.ia.pw.edu.pl/public_html/
+ -->
 
+### Podstawowa konfiguracja stron
+```s
 # ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled
 # ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/mods-enabled
 a2enmod authnz_ldap
@@ -43,14 +45,14 @@ cp ./000-default.conf ./asu1.asu.ia.pw.edu.pl.conf
 cp ./000-default.conf ./asu2.asu.ia.pw.edu.pl.conf
 cp ./000-default.conf ./asu3.asu.ia.pw.edu.pl.conf
 ```
-
+<!-- 
 **/etc/apache2/sites-available/asuN.asu.ia.pw.edu.pl.conf**
 ```s
 ...
 # DocumentRoot /var/www/html
 DocumentRoot /var/www/asuN.asu.ia.pw.edu.pl/public_html
 ...
-```
+``` -->
 
 **/etc/apache2/apache2.conf**
 ```s
@@ -145,6 +147,43 @@ Podobnie jak w etapie 1 na maszynie nginx należy skonfigurować serwer www ngin
 htpasswd -b -c /var/www/htpasswd ada ada
 htpasswd -b /var/www/htpasswd igor igor
 cat /var/www/htpasswd
+rm /etc/nginx/sites-available/default
+```
+
+**/etc/nginx/sites-available/default**
+```s
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www;
+    ssi on;
+    index index.shtml index.htm index.nginx-debian.html;
+
+    server_name asu4.ia.pw.edu.pl www.asu4.ia.pw.edu.pl;
+
+    location / {
+        try_files $uri $uri/ = 404;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www;
+    ssi on;
+    index index.shtml index.htm index.nginx-debian.html;
+
+    server_name asu5.ia.pw.edu.pl www.asu5.ia.pw.edu.pl;
+    
+    auth_basic "Restricted Access";
+    auth_basic_user_file /var/www/htpasswd;
+
+    location / {
+            try_files $uri $uri/ = 404;
+    }
+}
 ```
 
 # Etap III
