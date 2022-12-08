@@ -114,8 +114,9 @@ cat /var/www/htpasswd
         AuthName "LDAP"
         AuthType Basic
         AuthBasicProvider ldap
-        AuthzLDAPAuthoritative off # Tutaj jest jeszcze jakiś problem
-        AuthLDAPUrl ldap://asu.ia.pw.edu.pl/ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl?uid
+        # AuthzLDAPAuthoritative off # Tutaj jest jeszcze jakiś problem
+        # AuthLDAPUrl ldap://asu.ia.pw.edu.pl/ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl?uid
+        AuthLDAPUrl ldap://localhost/ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl?uid
         Require valid-user
         Satisfy any
     </Directory>
@@ -160,7 +161,7 @@ server {
     ssi on;
     index index.shtml index.htm index.nginx-debian.html;
 
-    server_name asu4.ia.pw.edu.pl www.asu4.ia.pw.edu.pl;
+    server_name asu4.asu.ia.pw.edu.pl www.asu4.asu.ia.pw.edu.pl;
 
     location / {
         try_files $uri $uri/ = 404;
@@ -175,7 +176,7 @@ server {
     ssi on;
     index index.shtml index.htm index.nginx-debian.html;
 
-    server_name asu5.ia.pw.edu.pl www.asu5.ia.pw.edu.pl;
+    server_name asu5.asu.ia.pw.edu.pl www.asu5.asu.ia.pw.edu.pl;
         
     auth_basic "Restricted Access";
     auth_basic_user_file /var/www/htpasswd;
