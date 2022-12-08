@@ -181,7 +181,7 @@ server {
     auth_basic_user_file /var/www/htpasswd;
 
     location / {
-            try_files $uri $uri/ = 404;
+        try_files $uri $uri/ = 404;
     }
 }
 ```
@@ -190,17 +190,88 @@ server {
 
 Na maszynie proxy należy uruchomić tzw. reverse proxy wykorzystując serwer apache2 tak aby przy połączeniu na adres: http://localhost:8000/asuN/ był widoczny server http://asuN.asu.ia.pw.edu.pl/ (gdzie N=1, 2, 3, 4, 5). Uwaga! Na maszynie proxy zainstalowane są dwa serwery apache2 i nginx konkurujace o port 80. Należy przekonfigurować serwer nginx aby używał portu 81.
 
-
 ## Rozwiązanie
+
+Jeszcze coś nie tak jest :(
+
+**/etc/apache2/sites-available/000-default.conf**
+
+```s
+<VirtualHost *:80>
+    ServerName proxy.asu.ia.pw.edu.pl:80
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    ProxyRequests Off
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyPass /asu1/ http://asu1.asu.ia.pw.edu.pl/
+    ProxyPassReverse /asu1/ http://asu1.asu.ia.pw.edu.pl/
+
+    ProxyPass /asu2/ http://asu2.asu.ia.pw.edu.pl/
+    ProxyPassReverse /asu2/ http://asu2.asu.ia.pw.edu.pl/
+
+    ProxyPass /asu3/ http://asu3.asu.ia.pw.edu.pl/
+    ProxyPassReverse /asu3/ http://asu3.asu.ia.pw.edu.pl/
+
+    ProxyPass /asu4/ http://asu4.asu.ia.pw.edu.pl/
+    ProxyPassReverse /asu4/ http://asu4.asu.ia.pw.edu.pl/
+
+    ProxyPass /asu5/ http://asu5.asu.ia.pw.edu.pl/
+    ProxyPassReverse /asu5/ http://asu5.asu.ia.pw.edu.pl/
+
+    <Location />
+        Order allow,deny
+        Allow from all
+    </Location>
+		
+</VirtualHost>
+```
+
+```s
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_balancer
+a2enmod lbmethod_byrequests
+a2ensite /etc/apache2/sites-available/000-default.conf
+
+service apache2 restart
+```
 
 
 # Etap IV
 
 Na maszynie proxy należy uruchomić tzw. reverse proxy wykorzystując serwer nginx na porcie 81 tak aby przy połączeniu na adres: http://localhost:8010/asuN/ był widoczny server http://asuN.asu.ia.pw.edu.pl/ (gdzie N=1, 2, 3, 4, 5).
 
-
 ## Rozwiązanie
 
+```s
+rm /etc/nginx/sites-available/default
+```
 
-
-# Komendy
+**/etc/nginx/sites-available/default**
+```s
+server {
+    listen 81;
+    listen [::]:81;
+	server_name proxy.asu.ia.pw.edu.pl:81;
+    location /asu1/ {
+        proxy_pass http://asu1.asu.ia.pw.edu.pl/;
+    }
+	location /asu2/ {
+        proxy_pass http://asu2.asu.ia.pw.edu.pl/;
+    }
+	location /asu3/ {
+        proxy_pass http://asu3.asu.ia.pw.edu.pl/;
+    }
+	location /asu4/ {
+        proxy_pass http://asu4.asu.ia.pw.edu.pl/;
+    }
+	location /asu5/ {
+        proxy_pass http://asu5.asu.ia.pw.edu.pl/;
+    }
+}
+```
