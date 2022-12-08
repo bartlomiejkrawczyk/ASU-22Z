@@ -176,7 +176,7 @@ server {
     index index.shtml index.htm index.nginx-debian.html;
 
     server_name asu5.ia.pw.edu.pl www.asu5.ia.pw.edu.pl;
-    
+        
     auth_basic "Restricted Access";
     auth_basic_user_file /var/www/htpasswd;
 
