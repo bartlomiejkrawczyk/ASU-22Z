@@ -58,16 +58,16 @@ DocumentRoot /var/www/asuN.asu.ia.pw.edu.pl/public_html
 ```s
 ...
 # <Directory /var/www/>
-# 	...
+#     ...
 # </Directory>
 
 <Directory /var/www/>
-	Options +Indexes +FollowSymLinks +MultiViews +Includes
-	AllowOverride None
+    Options +Indexes +FollowSymLinks +MultiViews +Includes
+    AllowOverride None
     Require all granted
     DirectoryIndex index.shtml
-	AddType text/html .shtml
-	AddOutputFilter INCLUDES .shtml
+    AddType text/html .shtml
+    AddOutputFilter INCLUDES .shtml
 </Directory>
 ...
 ```
@@ -227,7 +227,7 @@ Jeszcze coś nie tak jest :(
         Order allow,deny
         Allow from all
     </Location>
-		
+        
 </VirtualHost>
 ```
 
@@ -257,20 +257,20 @@ rm /etc/nginx/sites-available/default
 server {
     listen 81;
     listen [::]:81;
-	server_name proxy.asu.ia.pw.edu.pl:81;
+    server_name proxy.asu.ia.pw.edu.pl:81;
     location /asu1/ {
         proxy_pass http://asu1.asu.ia.pw.edu.pl/;
     }
-	location /asu2/ {
+    location /asu2/ {
         proxy_pass http://asu2.asu.ia.pw.edu.pl/;
     }
-	location /asu3/ {
+    location /asu3/ {
         proxy_pass http://asu3.asu.ia.pw.edu.pl/;
     }
-	location /asu4/ {
+    location /asu4/ {
         proxy_pass http://asu4.asu.ia.pw.edu.pl/;
     }
-	location /asu5/ {
+    location /asu5/ {
         proxy_pass http://asu5.asu.ia.pw.edu.pl/;
     }
 }
