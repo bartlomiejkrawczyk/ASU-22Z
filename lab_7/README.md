@@ -36,8 +36,19 @@ cp /var/www/index.shtml /var/www/asu3.ia.pw.edu.pl/public_html/
 
 ### Podstawowa konfiguracja stron
 ```s
-# ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled
-# ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/mods-enabled
+ln -s /etc/apache2/mods-available/include.load /etc/apache2/mods-enabled/
+# ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/mods-enabled/
+ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/
+ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/
+ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled/
+
+ln -s /etc/apache2/mods-available/include.load /etc/apache2/sites-available/
+# ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/sites-available/
+ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/sites-available/
+ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/sites-available/
+ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/sites-available/
+
+a2enmod include
 a2enmod authnz_ldap
 
 cd /etc/apache2/sites-available
@@ -77,6 +88,7 @@ DocumentRoot /var/www/asuN.asu.ia.pw.edu.pl/public_html
 <VirtualHost *:80>
     ...
     ServerName asu1.asu.ia.pw.edu.pl
+    DirectoryRoot /var/www
     ...
 </VirtualHost>
 ```
@@ -92,6 +104,7 @@ cat /var/www/htpasswd
 <VirtualHost *:80>
     ...
     ServerName asu2.asu.ia.pw.edu.pl
+    DirectoryRoot /var/www
     ...
     <Directory /var/www>
         AuthType Basic
@@ -107,6 +120,7 @@ cat /var/www/htpasswd
 <VirtualHost *:80>
     ...
     ServerName asu3.asu.ia.pw.edu.pl
+    DirectoryRoot /var/www
     ...
     <Directory /var/www>
         Order deny,allow
