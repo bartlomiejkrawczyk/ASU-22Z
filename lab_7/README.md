@@ -219,7 +219,7 @@ Jeszcze coś nie tak jest :(
 
 ```s
 <VirtualHost *:80>
-    ServerName proxy.asu.ia.pw.edu.pl:80
+    ServerName proxy.asu.ia.pw.edu.pl
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 
