@@ -263,6 +263,10 @@ service apache2 restart
 ```
 
 
+```s
+service nginx stop
+```
+
 # Etap IV
 
 Na maszynie proxy należy uruchomić tzw. reverse proxy wykorzystując serwer nginx na porcie 81 tak aby przy połączeniu na adres: http://localhost:8010/asuN/ był widoczny server http://asuN.asu.ia.pw.edu.pl/ (gdzie N=1, 2, 3, 4, 5).
