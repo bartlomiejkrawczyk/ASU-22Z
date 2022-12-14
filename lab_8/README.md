@@ -88,6 +88,10 @@ Na **wszystkich** maszynach zainstalowane są moduły `nagios-nrpe-server` a na 
 
 Wyłączamy jedną z maszyn **host1** lub **host2** i obserwujemy jak szybko zareagują poszczególne programy na to zdarzenie.
 
+## Rozwiązanie
+
+Wyłączamy **host2** -> PROFIT
+
 # Sugestie
 - Należy dodać użytkownika xymon do grupy adm aby miał prawo odczytu logów systemowych.
 - Ponieważ w dytrybucji Ubuntu głównym plikiem logów jest `/var/log/syslog` a nie `/var/log/messages` należy dokonać odpowiedniej modyfikacji w pliku `client-local.cfg`.
