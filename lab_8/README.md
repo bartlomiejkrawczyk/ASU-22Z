@@ -21,17 +21,23 @@ Na **wszystkich** maszynach należy skonfigurować pakiet `xymon-client` wskazuj
 
 ## Na każdej z maszyn
 
+```s
+usermod -a -G adm xymon
+```
+
 **/etc/xymon/analysis.cfg**
 ```s
 # DEFAULT
 HOST=192.168.1.1
     ...
 ```
+Brak tego pliku na host1 i host2 :(
 
 **/etc/xymon/client-local.cfg**
 ```s
 sed -i 's/messages/syslog/g' client-local.cfg
 ```
+Brak tego pliku na host1 i host2 :(
 
 ## Server
 
@@ -60,7 +66,6 @@ sed -i 's/messages/syslog/g' client-local.cfg
 
 ```s
 # a2ensite xymon.conf
-usermod -a -G adm xymon
 service apache2 restart
 ```
 
