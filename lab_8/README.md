@@ -19,6 +19,57 @@ Maszyny wirtualne:
 
 Na **wszystkich** maszynach należy skonfigurować pakiet `xymon-client` wskazując jako serwer adres IP maszyny server. Na maszynie server konfigurujemy program xymon tak aby obserwował wszystkie trzy maszyny i działające na nich usługi ssh oraz działającą na maszynie server usługę www. W konfiguracji serwera apache2 dodajemy wpisy umożliwiające dostęp do efektów działania programu xymon pod adresem: `/xymon`.
 
+## Na każdej z maszyn
+
+**/etc/xymon/analysis.cfg**
+```s
+# DEFAULT
+HOST=192.168.1.1
+    ...
+```
+
+**/etc/xymon/client-local.cfg**
+```s
+sed -i 's/messages/syslog/g' client-local.cfg
+```
+
+
+## Server
+
+**/etc/xymon/hosts.cfg**
+```s
+127.0.0.1       localhost
+192.168.1.10    host1
+192.168.1.20    host2
+```
+
+**/etc/apache2/sites-available/xymon.conf**
+```s
+<VirtualHost *:80>
+    ServerName localhost
+
+    <Location /asu1/>
+        DocumentRoot /var/lib/xymon/www
+    </Location>
+</VirtualHost>
+```
+
+**/etc/apache2/**
+```s
+<Directory /var/lib/xymon/www>
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+```
+
+
+```s
+# a2ensite xymon.conf
+usermod -a -G adm xymon
+service apache2 restart
+```
+
 # Etap II
 
 Na **wszystkich** maszynach konfigurujemy pakiet `munin-node` a na maszynie **server** również pakiet `munin` tak aby obserwował wszystkie trzy maszyny. Na serwerze wymagane jest aby program `munin-cron` był uruchamiany co 5 minut. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/munin`.
