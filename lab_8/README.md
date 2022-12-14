@@ -34,6 +34,8 @@ HOST=192.168.1.1
     ...
 ```
 
+Nie wiem gdzie są logi :(
+
 ## Server
 
 **/etc/xymon/analysis.cfg**
@@ -80,14 +82,14 @@ service apache2 restart
 Na **wszystkich** maszynach konfigurujemy pakiet `munin-node` a na maszynie **server** również pakiet `munin` tak aby obserwował wszystkie trzy maszyny. Na serwerze wymagane jest aby program `munin-cron` był uruchamiany co 5 minut. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/munin`.
 
 ## Server
+https://www.howtoforge.com/tutorial/server-monitoring-with-munin-and-monit-on-debian/
+https://ubuntu.com/server/docs/tools-munin
 
-W sugestiach polecają coś w tym stylu:
 ```s
-# ln -s /etc/munin/apache2.conf /etc/apache2/sites-available/
-cat /etc/munin/apache2.conf >> /etc/apache2/apache2.conf
+ln -s /etc/munin/apache2.conf /etc/apache2/conf-enabled/
 service reload apache2
 ```
-ale trzeba jeszcze podmieniać ręcznie `Order deny,allow` `Allow from all` na `Require all granted`. Chyba można też zmodyfikować te dwa pliki i będzie ten sam efekt szybciej:
+ale trzeba jeszcze podmieniać ręcznie `Order deny,allow` `Allow from all` na `Require all granted`. Chyba można też zmodyfikować te dwa pliki i będzie ten sam efekt:
 
 **/etc/apache2/apache2.conf**
 ```s
@@ -104,9 +106,27 @@ ale trzeba jeszcze podmieniać ręcznie `Order deny,allow` `Allow from all` na `
     Alias "/munin" "/var/cache/munin/www" # <- dodajemy
 ```
 
+**/etc/munin/munin-node.conf**
+```s
+host_name server.asu
+```
+
+```s
+# service reload m
+```
+
+???
+
+**/etc/cron.d/munin**
+```s
+...
+*/5 * * * *     munin-cron --config /etc/munin/munin.conf
+```
+
 # Etap III
 
 Na **wszystkich** maszynach zainstalowane są moduły `nagios-nrpe-server` a na maszynie **server** moduł `nagios-nrpe-plugin`. Należy zdefiniować pliki konfiguracyjne w katalogu `/etc/nagios3/config.d/` aby program monitorował wszystkie trzy maszyny obserwując połączenie z maszynami ping zajętość dysków oraz działanie usługi ssh. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/nagios3`.
+
 
 # Etap IV
 
