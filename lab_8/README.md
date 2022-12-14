@@ -19,6 +19,8 @@ Maszyny wirtualne:
 
 Na **wszystkich** maszynach należy skonfigurować pakiet `xymon-client` wskazując jako serwer adres IP maszyny server. Na maszynie server konfigurujemy program xymon tak aby obserwował wszystkie trzy maszyny i działające na nich usługi ssh oraz działającą na maszynie server usługę www. W konfiguracji serwera apache2 dodajemy wpisy umożliwiające dostęp do efektów działania programu xymon pod adresem: `/xymon`.
 
+**Uwaga:** Strasznie mi się nie chce :(
+
 ## Na każdej z maszyn
 
 ```s
@@ -34,7 +36,7 @@ HOST=192.168.1.1
     ...
 ```
 
-Nie wiem gdzie są logi :(
+Nie wiem gdzie są pliki konfiguracyjne z logami :(
 
 ## Server
 
@@ -127,6 +129,19 @@ host_name server.asu
 
 Na **wszystkich** maszynach zainstalowane są moduły `nagios-nrpe-server` a na maszynie **server** moduł `nagios-nrpe-plugin`. Należy zdefiniować pliki konfiguracyjne w katalogu `/etc/nagios3/config.d/` aby program monitorował wszystkie trzy maszyny obserwując połączenie z maszynami ping zajętość dysków oraz działanie usługi ssh. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/nagios3`.
 
+https://ubuntu.com/server/docs/tools-nagios
+
+```s
+ln -s /etc/nagios3/apache2.conf /etc/apache2/conf-enabled/nagios.conf
+service reload apache2
+```
+
+```s
+htpasswd /etc/nagios3/htpasswd.users nagiosadmin
+```
+
+???
+
 
 # Etap IV
 
@@ -142,4 +157,4 @@ Wyłączamy **host2** -> PROFIT
 - W konfiguracji `munin-node` wskazane jest użycie host name np. host1.asu aby mieć pewność, że będzie identyczne z użytym w konfiguracji serwera.
 - Hało użytkownika nagiosadmin należy zdefiniować w pliku `/etc/nagios3/htpasswd.users`.
 - Warto skorzystać z dostarczanych przez niektóre pakiety gotowych plików konfiguracyjnych dla serwera apache (umieszczanych zazwyczaj w katalogu `/etc/pakiet/apache2.conf`) wklejając je lub włączając przy pomocy dyrektywy include do aktualnej konfiguracji serwera.
-- W wersji Apache 2.4 dyrektywy: Order deny,allow Allow from all należy zastąpić przez Require all granted
+- W wersji Apache 2.4 dyrektywy: `Order deny,allow` `Allow from all` należy zastąpić przez Require all granted
