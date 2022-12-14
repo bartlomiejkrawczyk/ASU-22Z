@@ -61,7 +61,7 @@ sed -i 's/messages/syslog/g' client-local.cfg
     Alias "/xymon" "/var/lib/xymon/www" # <- dodajemy
 ```
 
-**/etc/apache2/apache.conf**
+**/etc/apache2/apache2.conf**
 ```s
 <Directory /var/lib/xymon/www>
     Options Indexes FollowSymLinks
@@ -81,19 +81,27 @@ Na **wszystkich** maszynach konfigurujemy pakiet `munin-node` a na maszynie **se
 
 ## Server
 
+W sugestiach polecają coś w tym stylu:
 ```s
 # ln -s /etc/munin/apache2.conf /etc/apache2/sites-available/
 cat /etc/munin/apache2.conf >> /etc/apache2/apache2.conf
 service reload apache2
 ```
+ale trzeba jeszcze podmieniać ręcznie `Order deny,allow` `Allow from all` na `Require all granted`. Chyba można też zmodyfikować te dwa pliki i będzie ten sam efekt szybciej:
 
-**/etc/apache2/apache.conf**
+**/etc/apache2/apache2.conf**
 ```s
-<Directory /var/lib/xymon/www>
+<Directory /var/cache/munin/www>
     Options Indexes FollowSymLinks
     AllowOverride None
     Require all granted
 </Directory>
+```
+
+**/etc/apache2/sites-available/000-default.conf**
+```s
+    DocumentRoot /var/www
+    Alias "/munin" "/var/cache/munin/www" # <- dodajemy
 ```
 
 # Etap III
@@ -113,5 +121,5 @@ Wyłączamy **host2** -> PROFIT
 - Ponieważ w dytrybucji Ubuntu głównym plikiem logów jest `/var/log/syslog` a nie `/var/log/messages` należy dokonać odpowiedniej modyfikacji w pliku `client-local.cfg`.
 - W konfiguracji `munin-node` wskazane jest użycie host name np. host1.asu aby mieć pewność, że będzie identyczne z użytym w konfiguracji serwera.
 - Hało użytkownika nagiosadmin należy zdefiniować w pliku `/etc/nagios3/htpasswd.users`.
-- Warto skorzystać z dostarczanych przez niektóre pakiety gotowych plików konfiguracyjnych dla serwera apache (umieszczanych zazwyczaj w katalogu `/etc/pakiet/apache.conf`) wklejając je lub włączając przy pomocy dyrektywy include do aktualnej konfiguracji serwera.
+- Warto skorzystać z dostarczanych przez niektóre pakiety gotowych plików konfiguracyjnych dla serwera apache (umieszczanych zazwyczaj w katalogu `/etc/pakiet/apache2.conf`) wklejając je lub włączając przy pomocy dyrektywy include do aktualnej konfiguracji serwera.
 - W wersji Apache 2.4 dyrektywy: Order deny,allow Allow from all należy zastąpić przez Require all granted
