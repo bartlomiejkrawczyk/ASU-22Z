@@ -72,13 +72,29 @@ sed -i 's/messages/syslog/g' client-local.cfg
 
 
 ```s
-# a2ensite xymon.conf
 service apache2 restart
 ```
 
 # Etap II
 
 Na **wszystkich** maszynach konfigurujemy pakiet `munin-node` a na maszynie **server** również pakiet `munin` tak aby obserwował wszystkie trzy maszyny. Na serwerze wymagane jest aby program `munin-cron` był uruchamiany co 5 minut. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/munin`.
+
+## Server
+
+```s
+# ln -s /etc/munin/apache2.conf /etc/apache2/sites-available/
+cat /etc/munin/apache2.conf >> /etc/apache2/apache2.conf
+service reload apache2
+```
+
+**/etc/apache2/apache.conf**
+```s
+<Directory /var/lib/xymon/www>
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+```
 
 # Etap III
 
