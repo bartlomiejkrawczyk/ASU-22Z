@@ -33,7 +33,6 @@ HOST=192.168.1.1
 sed -i 's/messages/syslog/g' client-local.cfg
 ```
 
-
 ## Server
 
 **/etc/xymon/hosts.cfg**
@@ -43,18 +42,13 @@ sed -i 's/messages/syslog/g' client-local.cfg
 192.168.1.20    host2
 ```
 
-**/etc/apache2/sites-available/xymon.conf**
+**/etc/apache2/sites-available/000-default.conf**
 ```s
-<VirtualHost *:80>
-    ServerName localhost
-
-    <Location /asu1/>
-        DocumentRoot /var/lib/xymon/www
-    </Location>
-</VirtualHost>
+    DocumentRoot /var/www
+    Alias "/xymon" "/var/lib/xymon/www" # <- dodajemy
 ```
 
-**/etc/apache2/**
+**/etc/apache2/apache.conf**
 ```s
 <Directory /var/lib/xymon/www>
     Options Indexes FollowSymLinks
