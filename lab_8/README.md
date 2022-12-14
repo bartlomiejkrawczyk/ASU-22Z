@@ -25,21 +25,28 @@ Na **wszystkich** maszynach należy skonfigurować pakiet `xymon-client` wskazuj
 usermod -a -G adm xymon
 ```
 
+## Na host1 i host2
+
+**/etc/xymon/localclient.cfg**
+```s
+# DEFAULT
+HOST=192.168.1.1
+    ...
+```
+
+## Server
+
 **/etc/xymon/analysis.cfg**
 ```s
 # DEFAULT
 HOST=192.168.1.1
     ...
 ```
-Brak tego pliku na host1 i host2 :(
 
 **/etc/xymon/client-local.cfg**
 ```s
 sed -i 's/messages/syslog/g' client-local.cfg
 ```
-Brak tego pliku na host1 i host2 :(
-
-## Server
 
 **/etc/xymon/hosts.cfg**
 ```s
