@@ -126,7 +126,7 @@ service munin restart
 Generalnie może już to istnieć:
 ```s
 ...
-*/5 * * * *     munin-cron --config /etc/munin/munin.conf
+*/5 * * * *  munin-cron --config /etc/munin/munin.conf
 ```
 
 ## Testowanie
@@ -159,60 +159,60 @@ service nagios-nrpe-server restart
 ```s
 ...
 define host{
-    use                     generic-host
-	host_name		        localhost
-	alias           	    localhost
-	address		            127.0.0.1
+    use                 generic-host
+    host_name           localhost
+    alias               localhost
+    address             127.0.0.1
 }
 define host{
-    use                     generic-host
-	host_name		        host1
-	alias           	    host1
-	address		            192.168.1.10
+    use                 generic-host
+    host_name           host1
+    alias               host1
+    address             192.168.1.10
 }
 define host{
-    use                     generic-host
-	host_name		        host2
-	alias           	    host2
-	address		            192.168.1.20
+    use                 generic-host
+    host_name           host2
+    alias               host2
+    address             192.168.1.20
 }
 ...
 define service{
     use                     generic-service
-	host_name		        localhost
-	service_description	    Disk Space
-	check_command		    check_all_disks!20%!10%
+    host_name               localhost
+    service_description     Disk Space
+    check_command           check_all_disks!20%!10%
 }
 define service{
     use                     generic-service
-	host_name		        host1
-	service_description	    Disk Space
-	check_command		    check_all_disks!20%!10%
+    host_name               host1
+    service_description     Disk Space
+    check_command           check_all_disks!20%!10%
 }
 define service{
     use                     generic-service
-	host_name		        host2
-	service_description	    Disk Space
-	check_command		    check_all_disks!20%!10%
+    host_name               host2
+    service_description     Disk Space
+    check_command           check_all_disks!20%!10%
 }
 ...
 define service{
     use                     generic-service
-	host_name		        localhost
+    host_name               localhost
+    service_description     SSH
+    check_command           check_ssh
+}
+define service{
+    use                     generic-service
+    host_name		        host1
 	service_description	    SSH
 	check_command		    check_ssh
 }
 define service{
     use                     generic-service
-	host_name		        host1
-	service_description	    SSH
-	check_command		    check_ssh
-}
-define service{
-    use                     generic-service
-	host_name		        host2
-	service_description	    SSH
-	check_command		    check_ssh
+    host_name               host2
+    service_description     SSH
+    check_command           check_ssh
 }
 ```
 
