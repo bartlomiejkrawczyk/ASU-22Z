@@ -204,9 +204,9 @@ define service{
 }
 define service{
     use                     generic-service
-    host_name		        host1
-	service_description	    SSH
-	check_command		    check_ssh
+    host_name               host1
+    service_description     SSH
+    check_command           check_ssh
 }
 define service{
     use                     generic-service
