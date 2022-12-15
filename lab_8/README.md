@@ -27,121 +27,210 @@ Na **wszystkich** maszynach należy skonfigurować pakiet `xymon-client` wskazuj
 usermod -a -G adm xymon
 ```
 
-## Na host1 i host2
-
-**/etc/xymon/localclient.cfg**
-```s
-# DEFAULT
-HOST=192.168.1.1
-    ...
-```
-
-Nie wiem gdzie są pliki konfiguracyjne z logami :(
-
 ## Server
-
-**/etc/xymon/analysis.cfg**
-```s
-# DEFAULT
-HOST=192.168.1.1
-    ...
-```
-
-**/etc/xymon/client-local.cfg**
-```s
-sed -i 's/messages/syslog/g' client-local.cfg
-```
 
 **/etc/xymon/hosts.cfg**
 ```s
-127.0.0.1       localhost
-192.168.1.10    host1
-192.168.1.20    host2
+...
+#127.0.0.1       localhost # bd ...
+127.0.0.1       localhost # ssh bd ...
+192.168.1.10    host1 # ssh
+192.168.1.20    host2 # ssh
+...
 ```
 
-**/etc/apache2/sites-available/000-default.conf**
 ```s
-    DocumentRoot /var/www
-    Alias "/xymon" "/var/lib/xymon/www" # <- dodajemy
-```
+cd /usr/lib/xymon/server/etc/
 
-**/etc/apache2/apache2.conf**
-```s
-<Directory /var/lib/xymon/www>
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
-```
+wget --no-check-certificate https://xymon.sourceforge.io/xymon/help/xymon-apacheconf.txt
 
+mv xymon-apacheconf.txt xymon-apache.conf
 
-```s
+sed -i 's/usr\/local/usr\/lib/g' xymon-apache.conf
+
+echo "Include /usr/lib/xymon/server/etc/xymon-apache.conf" >> /etc/apache2/apache2.conf
+
+service xymon restart
 service apache2 restart
 ```
+
+## Testowanie
+
+Wchodzimy w firefox na https://localhost:8000/xymon/
+
+Czekamy około 5 min i powinny maszyny się pojawić.
 
 # Etap II
 
 Na **wszystkich** maszynach konfigurujemy pakiet `munin-node` a na maszynie **server** również pakiet `munin` tak aby obserwował wszystkie trzy maszyny. Na serwerze wymagane jest aby program `munin-cron` był uruchamiany co 5 minut. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/munin`.
 
-## Server
-https://www.howtoforge.com/tutorial/server-monitoring-with-munin-and-monit-on-debian/
-https://ubuntu.com/server/docs/tools-munin
-
-```s
-ln -s /etc/munin/apache2.conf /etc/apache2/conf-enabled/
-service reload apache2
-```
-ale trzeba jeszcze podmieniać ręcznie `Order deny,allow` `Allow from all` na `Require all granted`. Chyba można też zmodyfikować te dwa pliki i będzie ten sam efekt:
-
-**/etc/apache2/apache2.conf**
-```s
-<Directory /var/cache/munin/www>
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
-```
-
-**/etc/apache2/sites-available/000-default.conf**
-```s
-    DocumentRoot /var/www
-    Alias "/munin" "/var/cache/munin/www" # <- dodajemy
-```
+## Host1
 
 **/etc/munin/munin-node.conf**
 ```s
-host_name server.asu
+...
+allow ^127\.0\.0\.1$
+allow ^:::1$
+allow ^192\.168\.1\.1$ # <- to dodajemy
+...
+# host_name localhost.localdomain
+host_name host1.asu  # <- to dodajemy
+...
 ```
 
 ```s
-# service reload m
+service munin-node restart
 ```
 
-???
+Na host2 analogicznie.
+
+## Server
+
+**/etc/munin/munin.conf**
+```s
+...
+[localhost.localdomain]
+    address 127.0.0.1
+    use_node_name yes
+
+[host1.asu]
+    address 192.168.1.10
+    use_node_name yes
+
+[host2.asu]
+    address 192.168.1.20
+    use_node_name yes
+...
+```
+
+**/etc/munin/apache.conf**
+Należy zamienić wszystkie wystąpienia:
+```s
+    Order deny,allow
+    Allow from localhost...
+```
+na:
+```s
+    Require all granted
+```
+
+```s
+echo "Include /etc/munin/apache.conf" >> /etc/apache2/apache2.conf
+
+service reload apache2
+service munin restart
+```
 
 **/etc/cron.d/munin**
+
+Generalnie może już to istnieć:
 ```s
 ...
 */5 * * * *     munin-cron --config /etc/munin/munin.conf
 ```
 
+## Testowanie
+
+Wchodzimy w firefox na https://localhost:8000/munin/
+
+Czekamy około 5 min i powinny maszyny się pojawić.
+
 # Etap III
 
 Na **wszystkich** maszynach zainstalowane są moduły `nagios-nrpe-server` a na maszynie **server** moduł `nagios-nrpe-plugin`. Należy zdefiniować pliki konfiguracyjne w katalogu `/etc/nagios3/config.d/` aby program monitorował wszystkie trzy maszyny obserwując połączenie z maszynami ping zajętość dysków oraz działanie usługi ssh. Do konfiguracji serwera www należy dodać odpowiednie wpisy aby rezultaty działania programu pojawiły się pod adresem `/nagios3`.
 
-https://ubuntu.com/server/docs/tools-nagios
+## HostN
+
+**/etc/nagios/nrpe.cfg**
+```s
+...
+# allowed_hosts=127.0.0.1
+allowed_hosts=127.0.0.1,192.168.1.1
+...
+```
 
 ```s
-ln -s /etc/nagios3/apache2.conf /etc/apache2/conf-enabled/nagios.conf
-service reload apache2
+service nagios-nrpe-server restart
+```
+
+## Server
+
+**/etc/nagios3/conf.d/localhost_nagios2.cfg**
+```s
+...
+define host{
+    use                     generic-host
+	host_name		        localhost
+	alias           	    localhost
+	address		            127.0.0.1
+}
+define host{
+    use                     generic-host
+	host_name		        host1
+	alias           	    host1
+	address		            192.168.1.10
+}
+define host{
+    use                     generic-host
+	host_name		        host2
+	alias           	    host2
+	address		            192.168.1.20
+}
+...
+define service{
+    use                     generic-service
+	host_name		        localhost
+	service_description	    Disk Space
+	check_command		    check_all_disks!20%!10%
+}
+define service{
+    use                     generic-service
+	host_name		        host1
+	service_description	    Disk Space
+	check_command		    check_all_disks!20%!10%
+}
+define service{
+    use                     generic-service
+	host_name		        host2
+	service_description	    Disk Space
+	check_command		    check_all_disks!20%!10%
+}
+...
+define service{
+    use                     generic-service
+	host_name		        localhost
+	service_description	    SSH
+	check_command		    check_ssh
+}
+define service{
+    use                     generic-service
+	host_name		        host1
+	service_description	    SSH
+	check_command		    check_ssh
+}
+define service{
+    use                     generic-service
+	host_name		        host2
+	service_description	    SSH
+	check_command		    check_ssh
+}
 ```
 
 ```s
 htpasswd /etc/nagios3/htpasswd.users nagiosadmin
+
+echo "Include /etc/nagios3/apache2.conf" >> /etc/apache2/apache2.conf
+
+service apache2 restart
 ```
 
-???
+## Testowanie
 
+Wchodzimy w firefox na https://localhost:8000/nagios3/
+
+Logujemy się na konto `nagiosadmin` i hasło podane wcześniej.
+
+Czekamy około 5 min i powinny maszyny się pojawić.
 
 # Etap IV
 
@@ -149,7 +238,7 @@ Wyłączamy jedną z maszyn **host1** lub **host2** i obserwujemy jak szybko zar
 
 ## Rozwiązanie
 
-Wyłączamy **host2** -> PROFIT
+Wyłączamy **host2** -> ***PROFIT***
 
 # Sugestie
 - Należy dodać użytkownika xymon do grupy adm aby miał prawo odczytu logów systemowych.
