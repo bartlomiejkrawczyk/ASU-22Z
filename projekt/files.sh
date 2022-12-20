@@ -3,31 +3,29 @@
 
 help () {
     cat << EOF
-Usage: files.sh [OPTION]... [POSITIONAL_ARGUMENT]...
-Hmm, how should it work?!
+Usage: files.sh [OPTION]... [CATALOG]...
+    -h --help     Display this message
+    -x --catalog  Specify the default catalog X
 EOF
 exit 0;
 }
 
+source ./.clean_files
 
 # ===================
 # = PARSE ARGUMENTS =
 # ===================
 
-POSITIONAL_ARGUMENTS=()
+CATALOGS=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     -h|--help)
         help
         ;;
-    -s|--searchpath)
-        SEARCHPATH="$2"
+    -x|--catalog)
+        DEFAULT_CATALOG="$2"
         shift
-        shift # past value
-        ;;
-    --default)
-        DEFAULT=YES
         shift
         ;;
     -*|--*)
@@ -36,21 +34,13 @@ while [[ $# -gt 0 ]]; do
         exit 1
         ;;
     *)
-        POSITIONAL_ARGUMENTS+=("$1")
+        CATALOGS+=("$1")
         shift
         ;;
   esac
 done
 
-echo "${POSITIONAL_ARGUMENTS[@]}"
-
-set -- "${POSITIONAL_ARGUMENTS[@]}"
-
-
-echo "FILE EXTENSION  = ${EXTENSION}"
-echo "SEARCH PATH    = ${SEARCHPATH}"
-echo "DEFAULT        = ${DEFAULT}"
-# echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
+set -- "${CATALOGS[@]}"
 
 # ================
 # = LOAD FOLDERS =
@@ -80,21 +70,63 @@ echo "DEFAULT        = ${DEFAULT}"
 # = FIND DUPLICATE CONTENT FILES =
 # ================================
 
-find ./ -type f -print0 | xargs -0 md5sum | sort -k1,32 | uniq -w32 -D
+duplicates () {
+    find "${CATALOGS[@]}" -type f -print0 | xargs -0 md5sum | sort -k1,32 | uniq -w32 -D | cut -c 35-
+}
 
+# duplicates
 
 # ====================
 # = FIND EMPTY FILES =
 # ====================
 
-find ./ -type f -size 0
+empty () {
+    find "${CATALOGS[@]}" -type f -size 0
+}
 
+# empty
 
 # ========================
 # = FIND SAME NAME FILES =
 # ========================
 
-find $DIRECTORY -type f | sed 's_.*/__' | sort|  uniq -d | 
-while read fileName;do
-    find $DIRECTORY -type f | grep "$fileName"
-done
+same_name () {
+    find "${CATALOGS[@]}" -type f | cat | sed 's_.*/__' | sort |  uniq -d | {
+        while read FILENAME;do
+            find "${CATALOGS[@]}" -name "$FILENAME"
+        done
+    }
+}
+
+# same_name
+
+# ========================
+# = FIND TEMPORARY FILES =
+# ========================
+
+temporary () {
+    find "${CATALOGS[@]}" -type f -regex "$TMP_FILES"
+}
+
+# temporary
+
+# ==================================
+# = FIND FILES WITH STRANGE ACCESS =
+# ==================================
+
+strange_access () {
+    find "${CATALOGS[@]}" -type f -not -perm "$SUGGESTED_ACCESS"
+}
+
+# strange_access
+
+# ========================================
+# = FIND FILES CONTAINING TRICKY LETTERS =
+# ========================================
+
+
+tricky_letters () {
+    find "${CATALOGS[@]}" -type f | grep -e "[${TRICKY_LETTERS}]"
+}
+
+# tricky_letters
