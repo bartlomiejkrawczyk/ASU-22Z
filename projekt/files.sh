@@ -20,6 +20,8 @@ source ./.clean_files
 # ===================
 
 CATALOGS=()
+OPERATIONS=()
+DEFAULT_CATALOG="./X"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -29,6 +31,10 @@ while [[ $# -gt 0 ]]; do
     -x|--catalog)
         DEFAULT_CATALOG="$2"
         shift
+        shift
+        ;;
+    -d|--duplicates)
+        OPERATIONS+=("DUPLICATES")
         shift
         ;;
     -*|--*)
@@ -218,7 +224,21 @@ strange_access () {
     find "${CATALOGS[@]}" -type f -not -perm "$SUGGESTED_ACCESS" -print0
 }
 
-# strange_access
+handle_strange_access () {
+    strange_access | {
+        while IFS= read -r -d $'\0' FILENAME; do
+            echo "Detected file with strange access: $FILENAME"
+
+            read -p "Do you want to change the access to default value? [y/n] "  CHANGE_STRANGE_ACCESS </dev/tty
+            if [[ "$CHANGE_STRANGE_ACCESS" = "y" ]]; then
+                chmod "-777" "$FILENAME"
+                chmod "+$SUGGESTED_ACCESS" "$FILENAME"
+            fi
+        done
+    }
+}
+
+# handle_strange_access
 
 # ===================================
 # = FILES CONTAINING TRICKY LETTERS =
@@ -229,22 +249,67 @@ tricky_letters () {
     find "${CATALOGS[@]}" -type f -print0 | grep -e "[${TRICKY_LETTERS}]" -z
 }
 
-# tricky_letters
+handle_tricky_letters () {
+    tricky_letters | {
+        while IFS= read -r -d $'\0' FILENAME; do
+            echo "Detected file with tricky letters: $FILENAME"
+
+            read -p "Do you want to replace those letters with default value? [y/n] "  REPLACE_TRICKY_LETTERS </dev/tty
+
+            if [[ "$REPLACE_TRICKY_LETTERS" = "y" ]]; then
+                NEW_NAME=$(echo "$FILENAME" | sed "s/[${TRICKY_LETTERS}]/${TRICKY_LETTER_SUBSTITUTE}/g")
+                mv -- "$FILENAME" "$NEW_NAME"
+            fi
+        done
+    }
+}
+
+# handle_tricky_letters
+
+# =======================
+# = MOVE TO DIRECTORY X =
+# =======================
 
 
-# ======================
-# = LOOP THROUGH FILES =
-# ======================
+handle_files_from_other_directories () {
+    SEARCH_CATALOGS=()
+    for CATALOG in "${CATALOGS[@]}"; do
+        if [[ "$CATALOG" != "$DEFAULT_CATALOG" ]]; then
+            find "$CATALOG" -type f -print0 | {
+                while IFS= read -r -d $'\0' FILENAME; do
+                    read -p "Do you want to copy the file $FILENAME to $DEFAULT_CATALOG? [y/n] " COPY_FILE </dev/tty
 
-# set -- "${CATALOGS[@]}"
+                    if [[ "$COPY_FILE" = "y" ]]; then
+                        CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
+                        CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
+                        NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                        cp -- "$FILENAME" "$NEW_FILENAME"
+                    fi
 
-# while [[ $# -gt 0 ]]; do
-#   case $1 in
-#     -h|--help)
-#         help
-#         ;;
-#   esac
-# done
+                done
+            }
+        fi
+    done
 
-# set -- "${CATALOGS[@]}"
+}
 
+# handle_files_from_other_directories
+
+# ===============
+# = RENAME FILE =
+# ===============
+
+handle_rename_file () {
+    find "${CATALOGS[@]}" -type f -print0 | {
+        while IFS= read -r -d $'\0' FILENAME; do
+            read -p "Do you want to rename file: $FILENAME? [y/n] "  RENAME_FILE </dev/tty
+
+            if [[ "$RENAME_FILE" = "y" ]]; then
+                read -p "Provide new name: " NEW_FILENAME </dev/tty
+                mv -- "$FILENAME" "$NEW_FILENAME"
+            fi
+        done
+    }
+}
+
+# handle_rename_file
