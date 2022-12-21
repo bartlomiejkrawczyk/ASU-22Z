@@ -1,14 +1,21 @@
 #!/bin/bash
 
-set -euxo pipefail
-# set -euo pipefail
-# set -eu pipefail
+# set -euxo pipefail
+set -euo pipefail
 
 help () {
     cat << EOF
 Usage: files.sh [OPTION] [CATALOG]...
-    -h --help     Display this message
-    -x --catalog  Specify the default catalog X
+    -h --help        Display this message
+    -x --catalog     Specify the default catalog X
+       --default     Use default values instead of user input
+    -d --duplicates  Remove duplicates
+    -e --empty       Remove empty files
+    -t --temporary   Remove temporary files
+    -s --same-name   Remove files with same name
+    -a --access      Change permissions to default value
+    -c --copy        Copy files to directory X
+    -r --rename      Rename files
 EOF
 exit 0;
 }
@@ -22,6 +29,7 @@ source ./.clean_files
 CATALOGS=()
 OPERATIONS=()
 DEFAULT_CATALOG="./X"
+DEFAULT="n"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -37,6 +45,34 @@ while [[ $# -gt 0 ]]; do
         OPERATIONS+=("DUPLICATES")
         shift
         ;;
+    -e|--empty)
+        OPERATIONS+=("EMPTY")
+        shift
+        ;;
+    -t|--temporary)
+        OPERATIONS+=("TEMPORARY")
+        shift
+        ;;
+    -s|--same-name)
+        OPERATIONS+=("SAME")
+        shift
+        ;;
+    -a|--access)
+        OPERATIONS+=("ACCESS")
+        shift
+        ;;
+    -c|--copy)
+        OPERATIONS+=("COPY")
+        shift
+        ;;
+    -r|--rename)
+        OPERATIONS+=("RENAME")
+        shift
+        ;;
+    --default)
+        DEFAULT="y"
+        shift
+        ;;
     -*|--*)
         echo "Unknown option $1" 1>&2
         help
@@ -48,9 +84,6 @@ while [[ $# -gt 0 ]]; do
         ;;
   esac
 done
-
-# set -- "${CATALOGS[@]}"
-
 
 # ===========================
 # = DUPLICATE CONTENT FILES =
@@ -116,8 +149,6 @@ handle_duplicates () {
     }
 }
 
-# handle_duplicates
-
 # ===============
 # = EMPTY FILES =
 # ===============
@@ -139,8 +170,6 @@ handle_empty () {
     }
 }
 
-# handle_empty
-
 # ===================
 # = TEMPORARY FILES =
 # ===================
@@ -161,8 +190,6 @@ handle_temporary () {
         done
     }
 }
-
-# handle_temporary
 
 # ===================
 # = SAME NAME FILES =
@@ -214,8 +241,6 @@ handle_same_name () {
     }
 }
 
-# handle_same_name
-
 # =============================
 # = FILES WITH STRANGE ACCESS =
 # =============================
@@ -238,12 +263,9 @@ handle_strange_access () {
     }
 }
 
-# handle_strange_access
-
 # ===================================
 # = FILES CONTAINING TRICKY LETTERS =
 # ===================================
-
 
 tricky_letters () {
     find "${CATALOGS[@]}" -type f -print0 | grep -e "[${TRICKY_LETTERS}]" -z
@@ -263,8 +285,6 @@ handle_tricky_letters () {
         done
     }
 }
-
-# handle_tricky_letters
 
 # =======================
 # = MOVE TO DIRECTORY X =
@@ -293,13 +313,11 @@ handle_files_from_other_directories () {
 
 }
 
-# handle_files_from_other_directories
-
 # ===============
 # = RENAME FILE =
 # ===============
 
-handle_rename_file () {
+handle_rename_files () {
     find "${CATALOGS[@]}" -type f -print0 | {
         while IFS= read -r -d $'\0' FILENAME; do
             read -p "Do you want to rename file: $FILENAME? [y/n] "  RENAME_FILE </dev/tty
@@ -312,4 +330,32 @@ handle_rename_file () {
     }
 }
 
-# handle_rename_file
+# ===========================
+# = LOOP THROUGH OPERATIONS =
+# ===========================
+
+for OPERATION in "${OPERATIONS[@]}"; do
+    case "$OPERATION" in
+        DUPLICATES)
+            handle_duplicates
+            ;;
+        EMPTY)
+            handle_empty
+            ;;
+        TEMPORARY)
+            handle_temporary
+            ;;
+        SAME)
+            handle_same_name
+            ;;
+        ACCESS)
+            handle_strange_access
+            ;;
+        COPY)
+            handle_files_from_other_directories
+            ;;
+        RENAME)
+            handle_rename_files
+            ;;
+    esac
+done
