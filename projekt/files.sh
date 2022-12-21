@@ -200,7 +200,6 @@ same_name () {
 }
 
 handle_same_name_files () {
-    echo $FILENAME
     FILES=()
     TIMES_CREATED=()
     FILE_LAST_CREATED="a"
@@ -216,8 +215,6 @@ handle_same_name_files () {
                 MAX_TIME="$TIME"
                 FILE_LAST_CREATED="$FILE"
             fi
-
-            echo $FILE
         done
 
         echo "Found files with same name: ${FILES[@]}"
