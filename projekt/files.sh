@@ -110,16 +110,23 @@ handle_duplicate_files () {
         fi
     done
 
-    echo "${TIMES_CREATED[@]}"
-
-    read -p "Do you want to remove all the duplicates and leave only: $FILE_CREATED_FIRST? [y/n] " REMOVE_DUPLICATES </dev/tty
-
-    if [[ "$REMOVE_DUPLICATES" = "y" ]]; then
+    if [[ "$DEFAULT" = "y" ]]; then
         for FILE in "${FILES[@]}"; do
             if [[ "$FILE" != "$FILE_CREATED_FIRST" ]]; then
+                echo "Removing duplicate file: $FILE"
                 rm "$FILE"
             fi
         done
+    else
+        read -p "Do you want to remove all the duplicates and leave only: $FILE_CREATED_FIRST? [y/n] " REMOVE_DUPLICATES </dev/tty
+
+        if [[ "$REMOVE_DUPLICATES" = "y" ]]; then
+            for FILE in "${FILES[@]}"; do
+                if [[ "$FILE" != "$FILE_CREATED_FIRST" ]]; then
+                    rm "$FILE"
+                fi
+            done
+        fi
     fi
 }
 
@@ -161,10 +168,15 @@ handle_empty () {
     empty  | {
         while IFS= read -r -d $'\0' FILENAME; do
 
-            read -p "Do you want to remove empty file: $FILENAME? [y/n] " REMOVE_EMPTY </dev/tty
-
-            if [[ "$REMOVE_EMPTY" = "y" ]]; then
+            if [[ "$DEFAULT" = "y" ]]; then
+                echo "Removing empty file: $FILENAME"
                 rm "$FILENAME"
+            else
+                read -p "Do you want to remove empty file: $FILENAME? [y/n] " REMOVE_EMPTY </dev/tty
+
+                if [[ "$REMOVE_EMPTY" = "y" ]]; then
+                    rm "$FILENAME"
+                fi
             fi
         done
     }
@@ -181,11 +193,15 @@ temporary () {
 handle_temporary () {
     temporary  | {
         while IFS= read -r -d $'\0' FILENAME; do
-
-            read -p "Do you want to remove temporary file: $FILENAME? [y/n] " REMOVE_TEMPORARY </dev/tty
-
-            if [[ "$REMOVE_TEMPORARY" = "y" ]]; then
+            if [[ "$DEFAULT" = "y" ]]; then
+                echo "Removing temprary file: $FILENAME"
                 rm "$FILENAME"
+            else
+                read -p "Do you want to remove temporary file: $FILENAME? [y/n] " REMOVE_TEMPORARY </dev/tty
+
+                if [[ "$REMOVE_TEMPORARY" = "y" ]]; then
+                    rm "$FILENAME"
+                fi
             fi
         done
     }
@@ -217,16 +233,25 @@ handle_same_name_files () {
             fi
         done
 
-        echo "Found files with same name: ${FILES[@]}"
-        read -p "Do you want to leave only: $FILE_LAST_CREATED? [y/n] " REMOVE_SAME_NAME </dev/tty
-
-        if [[ "$REMOVE_SAME_NAME" = "y" ]]; then
+        if [[ "$DEFAULT" = "y" ]]; then
             for FILE in "${FILES[@]}"; do
                 if [[ "$FILE" != "$FILE_LAST_CREATED" ]]; then
+                    echo "Removing same name file: $FILE"
                     rm "$FILE"
                 fi
             done
-        fi
+        else
+            echo "Found files with same name: ${FILES[@]}"
+            read -p "Do you want to leave only: $FILE_LAST_CREATED? [y/n] " REMOVE_SAME_NAME </dev/tty
+
+            if [[ "$REMOVE_SAME_NAME" = "y" ]]; then
+                for FILE in "${FILES[@]}"; do
+                    if [[ "$FILE" != "$FILE_LAST_CREATED" ]]; then
+                        rm "$FILE"
+                    fi
+                done
+            fi
+        fi        
     }
 }
 
@@ -249,12 +274,18 @@ strange_access () {
 handle_strange_access () {
     strange_access | {
         while IFS= read -r -d $'\0' FILENAME; do
-            echo "Detected file with strange access: $FILENAME"
 
-            read -p "Do you want to change the access to default value? [y/n] "  CHANGE_STRANGE_ACCESS </dev/tty
-            if [[ "$CHANGE_STRANGE_ACCESS" = "y" ]]; then
+            if [[ "$DEFAULT" = "y" ]]; then
+                echo "Modifying access to file: $FILENAME"
                 chmod "-777" "$FILENAME"
                 chmod "+$SUGGESTED_ACCESS" "$FILENAME"
+            else
+                echo "Detected file with strange access: $FILENAME"
+                read -p "Do you want to change the access to default value? [y/n] "  CHANGE_STRANGE_ACCESS </dev/tty
+                if [[ "$CHANGE_STRANGE_ACCESS" = "y" ]]; then
+                    chmod "-777" "$FILENAME"
+                    chmod "+$SUGGESTED_ACCESS" "$FILENAME"
+                fi
             fi
         done
     }
@@ -271,13 +302,20 @@ tricky_letters () {
 handle_tricky_letters () {
     tricky_letters | {
         while IFS= read -r -d $'\0' FILENAME; do
-            echo "Detected file with tricky letters: $FILENAME"
 
-            read -p "Do you want to replace those letters with default value? [y/n] "  REPLACE_TRICKY_LETTERS </dev/tty
-
-            if [[ "$REPLACE_TRICKY_LETTERS" = "y" ]]; then
+            if [[ "$DEFAULT" = "y" ]]; then
                 NEW_NAME=$(echo "$FILENAME" | sed "s/[${TRICKY_LETTERS}]/${TRICKY_LETTER_SUBSTITUTE}/g")
-                mv -- "$FILENAME" "$NEW_NAME"
+                echo "Replacing $FILENAME with $NEW_NAME"
+                mv -f -- "$FILENAME" "$NEW_NAME"
+            else
+                echo "Detected file with tricky letters: $FILENAME"
+
+                read -p "Do you want to replace those letters with default value? [y/n] "  REPLACE_TRICKY_LETTERS </dev/tty
+
+                if [[ "$REPLACE_TRICKY_LETTERS" = "y" ]]; then
+                    NEW_NAME=$(echo "$FILENAME" | sed "s/[${TRICKY_LETTERS}]/${TRICKY_LETTER_SUBSTITUTE}/g")
+                    mv -- "$FILENAME" "$NEW_NAME"
+                fi
             fi
         done
     }
@@ -294,15 +332,23 @@ handle_files_from_other_directories () {
         if [[ "$CATALOG" != "$DEFAULT_CATALOG" ]]; then
             find "$CATALOG" -type f -print0 | {
                 while IFS= read -r -d $'\0' FILENAME; do
-                    read -p "Do you want to copy the file $FILENAME to $DEFAULT_CATALOG? [y/n] " COPY_FILE </dev/tty
 
-                    if [[ "$COPY_FILE" = "y" ]]; then
+                    if [[ "$DEFAULT" = "y" ]]; then
+                        echo "Copying $FILENAME to catalog $DEFAULT_CATALOG"
                         CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
                         CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
                         NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
-                        cp -- "$FILENAME" "$NEW_FILENAME"
-                    fi
+                        cp -r -- "$FILENAME" "$NEW_FILENAME"
+                    else
+                        read -p "Do you want to copy the file $FILENAME to $DEFAULT_CATALOG? [y/n] " COPY_FILE </dev/tty
 
+                        if [[ "$COPY_FILE" = "y" ]]; then
+                            CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
+                            CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
+                            NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                            cp -r -- "$FILENAME" "$NEW_FILENAME"
+                        fi
+                    fi
                 done
             }
         fi
