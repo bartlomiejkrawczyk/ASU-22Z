@@ -338,6 +338,7 @@ handle_files_from_other_directories () {
                         CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
                         CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
                         NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                        mkdir -p $(dirname "$NEW_FILENAME")
                         cp -r -- "$FILENAME" "$NEW_FILENAME"
                     else
                         read -p "Do you want to copy the file $FILENAME to $DEFAULT_CATALOG? [y/n] " COPY_FILE </dev/tty
@@ -346,6 +347,7 @@ handle_files_from_other_directories () {
                             CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
                             CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
                             NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                            mkdir -p $(dirname "$NEW_FILENAME")
                             cp -r -- "$FILENAME" "$NEW_FILENAME"
                         fi
                     fi
