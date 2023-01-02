@@ -340,19 +340,19 @@ handle_files_from_other_directories () {
 
                     if [[ "$DEFAULT" = "y" ]]; then
                         echo "Copying $FILENAME to catalog $DEFAULT_CATALOG"
-                        CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
-                        CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
-                        NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
-                        mkdir -p $(dirname "$NEW_FILENAME")
+                        CLEAR_CATALOG=$(echo -n "$CATALOG" | sed -z 's/\//\\\//g')
+                        CLEAR_DEFAULT=$(echo -n "$DEFAULT_CATALOG" | sed -z 's/\//\\\//g')
+                        NEW_FILENAME=$(echo -n "$FILENAME" | sed -z "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                        mkdir -p "$(dirname "$NEW_FILENAME")"
                         cp -r -- "$FILENAME" "$NEW_FILENAME"
                     else
                         read -p "Do you want to copy the file $FILENAME to $DEFAULT_CATALOG? [y/n] " COPY_FILE </dev/tty
 
                         if [[ "$COPY_FILE" = "y" ]]; then
-                            CLEAR_CATALOG=$(echo "$CATALOG" | sed 's/\//\\\//g')
-                            CLEAR_DEFAULT=$(echo "$DEFAULT_CATALOG" | sed 's/\//\\\//g')
-                            NEW_FILENAME=$(echo "$FILENAME" | sed "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
-                            mkdir -p $(dirname "$NEW_FILENAME")
+                            CLEAR_CATALOG=$(echo -n "$CATALOG" | sed -z 's/\//\\\//g')
+                            CLEAR_DEFAULT=$(echo -n "$DEFAULT_CATALOG" | sed -z 's/\//\\\//g')
+                            NEW_FILENAME=$(echo -n "$FILENAME" | sed -z "0,/$CLEAR_CATALOG/{s/$CLEAR_CATALOG/$CLEAR_DEFAULT/}")
+                            mkdir -p "$(dirname "$NEW_FILENAME")"
                             cp -r -- "$FILENAME" "$NEW_FILENAME"
                         fi
                     fi
