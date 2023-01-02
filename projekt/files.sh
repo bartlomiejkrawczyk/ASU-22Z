@@ -17,6 +17,8 @@ Usage: files.sh [OPTION] [CATALOG]...
     -t --tricky      Replace tricky letters with default one
     -c --copy        Copy files to directory X
     -r --rename      Rename files
+Example:
+./files.sh ./X ./Y1 ./Y2 ./Y3 --catalog ./X --duplicates --empty --temporary --same-name --access --copy --tricky --default
 EOF
 exit 0;
 }
