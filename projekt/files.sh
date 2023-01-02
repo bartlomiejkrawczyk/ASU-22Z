@@ -14,6 +14,7 @@ Usage: files.sh [OPTION] [CATALOG]...
     -t --temporary   Remove temporary files
     -s --same-name   Remove files with same name
     -a --access      Change permissions to default value
+    -t --tricky      Replace tricky letters with default one
     -c --copy        Copy files to directory X
     -r --rename      Rename files
 EOF
@@ -59,6 +60,10 @@ while [[ $# -gt 0 ]]; do
         ;;
     -a|--access)
         OPERATIONS+=("ACCESS")
+        shift
+        ;;
+    -t|--tricky)
+        OPERATIONS+=("TRICKY")
         shift
         ;;
     -c|--copy)
@@ -395,6 +400,9 @@ for OPERATION in "${OPERATIONS[@]}"; do
             ;;
         ACCESS)
             handle_strange_access
+            ;;
+        TRICKY)
+            handle_tricky_letters
             ;;
         COPY)
             handle_files_from_other_directories
