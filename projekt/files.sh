@@ -199,7 +199,7 @@ handle_temporary () {
     temporary  | {
         while IFS= read -r -d $'\0' FILENAME; do
             if [[ "$DEFAULT" = "y" ]]; then
-                echo "Removing temprary file: $FILENAME"
+                echo "Removing temporary file: $FILENAME"
                 rm "$FILENAME"
             else
                 read -p "Do you want to remove temporary file: $FILENAME? [y/n] " REMOVE_TEMPORARY </dev/tty
