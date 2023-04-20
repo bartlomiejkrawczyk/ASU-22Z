@@ -113,7 +113,7 @@ Personal Name               = ewa
 SMTP Domain                 = asu.ia.pw.edu.pl
 SMTP Server (for sending)   = host1.asu.ia.pw.edu.pl
 SMTP Server (for news)      = <No Value Set>
-Inbox Path                  = {host1.asu.ia.pw.edu.pl:143/user=ewa} inbox
+Inbox Path                  = {host1.asu.ia.pw.edu.pl:143/user=ewa}inbox
 ...
 
 [Composer preferences]
