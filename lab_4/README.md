@@ -45,14 +45,13 @@ Katalog domowy użytkownika został utworzony na maszynie **host1** z `uid=5000`
 dn: ou=People,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
 ou: People
 objectClass: organizationalUnit
-structuralObjectClass: organizationalUnit
 
 dn: ou=Groups,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
 objectClass: organizationalUnit
 ou: Groups
 
 dn: cn=students,ou=Groups,dc=asu,dc=ia,dc=pw,dc=edu,dc=pl
-objectClass: posixAccount
+objectClass: posixGroup
 cn: students
 gidNumber: 5000
 
@@ -70,9 +69,6 @@ uidNumber: 5000
 gidNumber: 5000
 homeDirectory: /home/users/jan
 gecos: Jan Kowalski,,,
-sn: Kowalski
-givenName: Jan
-displayName: Jan Kowalski
 ```
 
 ```s
