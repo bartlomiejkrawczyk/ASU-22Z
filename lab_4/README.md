@@ -102,3 +102,5 @@ ldapadd
 pam-auth-update
 slapcat
 ```
+
+Jeśli katalog domowy /home/users/jan nie jest automatycznie utworzony, trzeba stworzyć z palca.
