@@ -135,6 +135,7 @@ server {
     ssi on;
     index index.shtml;
     server_name asu4.asu.ia.pw.edu.pl;
+    ssi_types text/shtml text/html;
 }
 
 server {
@@ -142,6 +143,9 @@ server {
     ssi on;
     index index.shtml;
     server_name asu5.asu.ia.pw.edu.pl;
+
+    auth_basic "Restricted Content";
+    auth_basic_user_file /var/www/htpasswd;
 }
 ```
 
