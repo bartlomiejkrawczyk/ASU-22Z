@@ -267,3 +267,6 @@ server {
     }
 }
 ```
+
+`nginx -t`
+`nginx`
