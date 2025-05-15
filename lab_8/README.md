@@ -222,6 +222,7 @@ htpasswd /etc/nagios3/htpasswd.users nagiosadmin
 echo "Include /etc/nagios3/apache2.conf" >> /etc/apache2/apache2.conf
 
 service apache2 restart
+service nagios3 restart
 ```
 
 ## Testowanie
