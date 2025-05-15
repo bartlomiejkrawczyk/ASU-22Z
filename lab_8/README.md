@@ -56,7 +56,7 @@ service apache2 restart
 
 ## Testowanie
 
-Wchodzimy w firefox na https://localhost:8000/xymon/
+Wchodzimy w firefox na http://localhost:8000/xymon/
 
 Czekamy około 5 min i powinny maszyny się pojawić.
 
@@ -131,7 +131,7 @@ Generalnie może już to istnieć:
 
 ## Testowanie
 
-Wchodzimy w firefox na https://localhost:8000/munin/
+Wchodzimy w firefox na http://localhost:8000/munin/
 
 Czekamy około 5 min i powinny maszyny się pojawić.
 
@@ -226,7 +226,7 @@ service apache2 restart
 
 ## Testowanie
 
-Wchodzimy w firefox na https://localhost:8000/nagios3/
+Wchodzimy w firefox na http://localhost:8000/nagios3/
 
 Logujemy się na konto `nagiosadmin` i hasło podane wcześniej.
 
