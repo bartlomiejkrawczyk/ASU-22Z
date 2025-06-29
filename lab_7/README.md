@@ -31,6 +31,7 @@ a2enmod authnz_ldap
 htpasswd -b -c /var/www/htpasswd ada ada
 htpasswd -b /var/www/htpasswd igor igor
 cat /var/www/htpasswd
+cp /var/www/htpasswd /etc/apache2/htpasswd
 ```
 
 ### Dodaj `Includes` do opcji i rozszerzenie `shtml`
@@ -134,6 +135,7 @@ server {
     ssi on;
     index index.shtml;
     server_name asu4.asu.ia.pw.edu.pl;
+    ssi_types text/shtml text/html;
 }
 
 server {
@@ -141,6 +143,9 @@ server {
     ssi on;
     index index.shtml;
     server_name asu5.asu.ia.pw.edu.pl;
+
+    auth_basic "Restricted Content";
+    auth_basic_user_file /var/www/htpasswd;
 }
 ```
 
@@ -262,3 +267,6 @@ server {
     }
 }
 ```
+
+`nginx -t`
+`nginx`

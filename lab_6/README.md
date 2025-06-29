@@ -94,9 +94,9 @@ iptables -A INPUT -p tcp --dport 53 -j DROP
 | client    | elinks 192.168.1.10               | nie działa |                                        |
 | client    | ssh user@192.168.1.20             | nie działa |                                        |
 | client    | dig @firewall mion.elka.pw.edu.pl | nie działa |                                        |
-| host1     | elinks www.elka.pw.edu.pl         | działa     |                                        |
+| host1     | elinks studia.elka.pw.edu.pl         | działa     |                                        |
 | host1     | ssh login@mion.elka.pw.edu.pl     | działa     |                                        |
-| host2     | elinks www.elka.pw.edu.pl         | działa     |                                        |
+| host2     | elinks studia.elka.pw.edu.pl         | działa     |                                        |
 | host2     | ssh login@mion.elka.pw.edu.pl     | działa     |                                        |
 
 
